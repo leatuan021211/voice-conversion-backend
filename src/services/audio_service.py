@@ -138,6 +138,4 @@ class AudioService:
         # GriffinLim expects shape [freq, time]
         waveform = griffinlim(linear_spec)
         waveform = waveform.squeeze(0).detach().numpy().tolist()
-        print("MINIMUM RESULT VALUE:", min(waveform))
-        print("MAXIMUM RESULT VALUE:", max(waveform))
         return waveform

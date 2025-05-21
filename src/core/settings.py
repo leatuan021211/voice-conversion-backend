@@ -41,3 +41,9 @@ class LoggerSettings:
     LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     LOG_FILE = "app.log"
     LOG_DIR = "logs"
+
+
+class VoiceSettings:
+    
+    VOICE_FOLDER = "core/voices"
+    VOICE_LIST_FILE = "voice_list.json"

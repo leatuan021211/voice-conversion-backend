@@ -1,5 +1,6 @@
 import base64
 from io import BytesIO
+import tempfile
 
 import numpy as np
 import torch
@@ -19,7 +20,7 @@ class AudioService:
 
     @staticmethod
     def load_audio(audio: BytesIO) -> tuple[np.ndarray, int]:
-        waveform, _ = librosa.load(audio, sr=AudioSettings.SAMPLE_RATE, mono=True)
+        waveform, _ = librosa.load(audio.file, sr=AudioSettings.SAMPLE_RATE, mono=True)
         return waveform
     
     @staticmethod
@@ -136,7 +137,6 @@ class AudioService:
 
         # GriffinLim expects shape [freq, time]
         waveform = griffinlim(linear_spec)
-        
         waveform = waveform.squeeze(0).detach().numpy().tolist()
         print("MINIMUM RESULT VALUE:", min(waveform))
         print("MAXIMUM RESULT VALUE:", max(waveform))

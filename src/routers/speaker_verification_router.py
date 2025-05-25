@@ -12,22 +12,22 @@ logger.setLevel(LoggerSettings.LOG_LEVEL)
 router = APIRouter(prefix="/api/speaker_verification", tags=["Speaker Verification"])
 
 @router.post("/similarity")
-async def get_similarity(audio1: UploadFile = File(...), aduio2: UploadFile = File(...)):
+async def get_similarity(audio1: UploadFile = File(...), audio2: UploadFile = File(...)):
     """
     Endpoint to compare two audi1o files and return their similarity score.
     
     Args:
         audio1 (UploadFile): First audio file.
-        aduio2 (UploadFile): Second audio file.
+        audio2 (UploadFile): Second audio file.
     
     Returns:
         JSONResponse: Similarity score between the two audio files.
     """
     try:
-        similarity = SpeakerVerificationService.cal_cosine_similarity(audio1.file, aduio2.file)
+        similarity = SpeakerVerificationService.cal_cosine_similarity(audio1, audio2)
         return JSONResponse(
             content={
-                "similarity": similarity.item(),
+                "similarity": similarity,
                 "message": "Similarity calculated successfully."
                 }
             )

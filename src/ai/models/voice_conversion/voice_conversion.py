@@ -17,10 +17,11 @@ class VoiceConversion(nn.Module):
         super(VoiceConversion, self).__init__()
         self.content_encoder = ContentEncoder(model_name)
         self.encoder_output_dim = 110
-        self.pre_decoder = nn.Conv1d(
-            self.encoder_output_dim, 256, kernel_size=1, stride=1
-        )
-        self.attn = CrossAttention(256)
+        self.embedding_dim = 64
+        self.n_embeddings = 256
+        self.pre_conv = nn.Conv1d(
+            self.encoder_output_dim, self.n_embeddings, kernel_size=1, stride=1)
+        self.attn = CrossAttention(self.n_embeddings)
         self.follow_matcher = ExactOptimalTransportConditionalFlowMatcher(sigma=1e-4)
         self.decoder = MelDecoder(n_up_down=1, n_mid=2, in_channels=256, out_channels=80)
         
@@ -37,12 +38,12 @@ class VoiceConversion(nn.Module):
         content_features = self.content_encoder(inputs)
         
         # Apply pre-quantization convolution
-        content_features = content_features.permute(0, 2, 1)
-        content_features = self.pre_decoder(content_features)
-        content_features = content_features.permute(0, 2, 1)
+        pre_decode = content_features.permute(0, 2, 1)
+        pre_decode = self.pre_conv(pre_decode)
+        pre_decode = pre_decode.permute(0, 2, 1)
         
         # Cross-attention
-        attention_output = self.attn(content_features, speaker_embedding)
+        attention_output = self.attn(pre_decode, speaker_embedding)
         # attention_output = attention_output.permute(0, 2, 1)
 
         x1 = attention_output
@@ -53,7 +54,7 @@ class VoiceConversion(nn.Module):
         # Decode the content features
         decoded_output, cfm_loss = self.decoder(xt, speaker_embedding, t, ut)
         
-        return decoded_output, cfm_loss
+        return decoded_output, content_features, cfm_loss
 
     @classmethod
     def load_from_checkpoint(cls, checkpoint_path: str) -> "VoiceConversion":

@@ -123,9 +123,9 @@ class FeedForward(nn.Module):
 
 class DecoderBlock(nn.Module):
     
-    def __init__(self, in_channels, out_channels, time_emb_dim):
+    def __init__(self, in_channels, out_channels, time_emb_dim, kernel_size, stride, padding):
         super(DecoderBlock, self).__init__()
-        self.resnet_block = ResnetBlock1D(in_channels, out_channels, time_emb_dim)
+        self.resnet_block = ResnetBlock1D(in_channels, out_channels, time_emb_dim, kernel_size, stride, padding)
         self.layernorm1 = nn.LayerNorm(out_channels, elementwise_affine=True)
         self.cross_attention = CrossAttention(embed_size=out_channels)
         self.layernorm2 = nn.LayerNorm(out_channels, elementwise_affine=True)
@@ -175,26 +175,26 @@ class MelDecoder(nn.Module):
         self.n_mid = n_mid
         
         self.down_layers = nn.ModuleList()
-        self.down_layers.append(DecoderBlock(in_channels, in_channels, in_channels))
+        self.down_layers.append(DecoderBlock(in_channels, in_channels, in_channels, kernel_size=11, stride=1, padding=5))
         for _ in range(1, n_up_down):
-            self.down_layers.append(DecoderBlock(in_channels, in_channels, in_channels))
+            self.down_layers.append(DecoderBlock(in_channels, in_channels, in_channels, kernel_size=11, stride=1, padding=5))
         
         self.mid_layers = nn.ModuleList()
         for _ in range(n_mid):
-            self.mid_layers.append(DecoderBlock(in_channels, in_channels, in_channels))
+            self.mid_layers.append(DecoderBlock(in_channels, in_channels, in_channels, kernel_size=11, stride=1, padding=5))
             
         self.up_layers = nn.ModuleList()
         for _ in range(n_up_down):
-            self.up_layers.append(ResnetBlock1D(in_channels * 2, in_channels, in_channels))
-            self.up_layers.append(DecoderBlock(in_channels, in_channels, in_channels))
+            self.up_layers.append(ResnetBlock1D(in_channels * 2, in_channels, in_channels, kernel_size=11, stride=1, padding=5))
+            self.up_layers.append(DecoderBlock(in_channels, in_channels, in_channels, kernel_size=11, stride=1, padding=5))
             
-        self.out_conv = nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, stride=1)          
+        self.out_conv = nn.ConvTranspose1d(in_channels=in_channels, out_channels=out_channels, kernel_size=16, stride=1, padding=7)          
         self.initialize_weights()
 
     def initialize_weights(self):
         for m in self.modules():
             if isinstance(m, nn.Conv1d):
-                nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+                nn.init.kaiming_normal_(m.weight, a=0.01, mode='fan_in', nonlinearity='leaky_relu')
 
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)

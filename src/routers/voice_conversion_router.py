@@ -14,8 +14,8 @@ logger.setLevel(LoggerSettings.LOG_LEVEL)
 router = APIRouter(prefix="/api/voice_conversion", tags=["Voice Conversion"])
 
 @router.post("/")
-async def voice_conversion(source: UploadFile = File(...), voice_name: str = "wahahaha"):
-    audio_base64 = VoiceConversionService.converse_voice(source.file, voice_name)
+async def voice_conversion(source_audio: UploadFile = File(...), voice_id: str = "voice1"):
+    audio_base64 = VoiceConversionService.converse_voice(source_audio.file, voice_id)
     return JSONResponse(
         content={
             "audio_base64": audio_base64,

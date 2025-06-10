@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
-from transformers import HubertModel, Wav2Vec2FeatureExtractor
+from transformers.models.hubert import HubertModel, HubertConfig
+from transformers.models.wav2vec2 import Wav2Vec2FeatureExtractor
+
 
 class PretrainedHuBERT(nn.Module):
     """
@@ -14,7 +16,8 @@ class PretrainedHuBERT(nn.Module):
         """
         super(PretrainedHuBERT, self).__init__()
         self.processor = Wav2Vec2FeatureExtractor.from_pretrained(model_path)
-        self.model = HubertModel.from_pretrained(model_path)
+        self.config = HubertConfig.from_pretrained(model_path)
+        self.model = HubertModel(config=self.config) # type: ignore
 
     def forward(self, inputs: torch.Tensor, sampling_rate: int=16000) -> torch.Tensor:
         """

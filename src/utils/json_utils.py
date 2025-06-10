@@ -1,10 +1,5 @@
 import json
 
-'''
-1. load json file
-2. update json file
-3. save json file
-'''
 
 def load_json(file_path: str) -> dict:
     """

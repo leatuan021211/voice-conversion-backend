@@ -11,6 +11,7 @@ class AudioSettings:
     WIN_LENGTH = 1280
     F_MIN = 0
     F_MAX = 8000
+    POWER = 2.0
     CENTER = False
     
     # VAD TRIMMING
@@ -19,8 +20,11 @@ class AudioSettings:
     VAD_MAX_SILENCE_LENGTH = 6
 
     # Normalization
-    MEL_MEAN = -4.51203894828719
-    MEL_STD = 2.0027185876269336
+    LOG_MEL_MEAN = -14.719878446839134
+    LOG_MEL_STD = 19.178215519514534
+    
+    # Griffin-Lim settings
+    GRIFFIN_LIM_N_ITER = 32
 
 
 class SpeakerVerificationSettings:

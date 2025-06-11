@@ -1,9 +1,9 @@
 import math
+
 import torch
-import torch.nn as nn
 
 
-class SinusoidalPosEmb(nn.Module):
+class SinusoidalPosEmb(torch.nn.Module):
     def __init__(self, dim):
         super().__init__()
         self.dim = dim

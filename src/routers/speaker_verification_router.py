@@ -24,7 +24,7 @@ async def get_similarity(audio1: UploadFile = File(...), audio2: UploadFile = Fi
         JSONResponse: Similarity score between the two audio files.
     """
     try:
-        similarity = SpeakerVerificationService.cal_cosine_similarity(audio1, audio2)
+        similarity = SpeakerVerificationService.cal_cosine_similarity(audio1.file, audio2.file)
         return JSONResponse(
             content={
                 "similarity": similarity,

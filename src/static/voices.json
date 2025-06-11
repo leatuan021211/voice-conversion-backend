@@ -1,0 +1,8 @@
+{
+    "voice1": {
+        "id": "voice1",
+        "name": "Voice 1",
+        "description": "A sample voice for testing purposes",
+        "path": "static/voice_embeds/embed.pt"
+    }
+}
